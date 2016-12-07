@@ -22,7 +22,7 @@ namespace Factored.ECS.Systems
 		private Point lastHighlight = new Point(0,0);
 		private Point newHighlight;
 
-		private bool _dirty = true;
+		public bool _dirty = true;
 
 		public RenderingSystem( Console canvas )
 		{
@@ -86,40 +86,61 @@ namespace Factored.ECS.Systems
 			}
 		}
 
+
 		public void RenderMap( MapSystem map )
 		{
 
 			foreach ( Point tile in map.tilesToUpdate )
 			{
-				SetTileAppearance( tile.X, tile.Y, map.GetTile( tile ) );
+				SetTileAppearance( tile.X, tile.Y, map.GetTileType( tile ) );
 			}
+
+
 			map.tilesToUpdate.Clear();
 			
 			if ( _dirty )
 			{
+				System.Console.WriteLine( "render Map ! " );
 				for ( int x = 0; x < map.mapRect.Width; x++ )
 					for ( int y = 0; y < map.mapRect.Height; y++ )
 					{
 						if ( map.isInFov[x, y] == true )
 						{
-							if ( canvas[x, y].Effect != null && canvas[x, y].Effect != CellAppearances.HighlighEffect )
+							//SetTileAppearance( x, y, map.GetTileType( x, y ) );
+							if ( canvas[x, y].Effect != null )
 							{
+
 								canvas[x, y].Effect.Clear( canvas[x, y] );
-								canvas[x, y].Effect.Apply( canvas[x, y] );
+								map.tilesToUpdate.Add( new Point( x, y ) );
+								//canvas[x, y].Effect.Apply( canvas[x, y] );
 							}
-
-							SetTileAppearance(x,y, map.GetTile( x, y ) );
-							
 						}
-						else if ( map.isExplored[x, y] )
+						else if ( map.isExplored[x, y] == true ) 
 						{
-							if ( map.GetTile( x, y ) != TileType.None )
+							
+							if ( map.GetTileType( x, y ) != TileType.None )
 							{
-								canvas.SetEffect( x, y, CellAppearances.ExploredEffect );
+								canvas[x, y].Effect = CellAppearances.ExploredEffect ;
 								canvas[x, y].Effect.Apply( canvas[x, y] );
 							}
-
 						}
+						//if ( !map.isInFov[x, y] && map.isExplored[x, y] )
+						//{
+						//	if ( map.GetTileType( x, y ) != TileType.None )
+						//	{
+						//		canvas.SetEffect( x, y, CellAppearances.ExploredEffect );
+						//		canvas[x, y].Effect.Apply( canvas[x, y] );
+						//	}
+						//}
+						if ( !map.isInFov[x, y] && !map.isExplored[x, y] )
+						{
+							if ( map.GetTileType( x, y ) != TileType.None )
+							{
+								canvas[x, y].Effect = CellAppearances.HiddenEffect ;
+								canvas[x, y].Effect.Apply( canvas[x, y] );
+							}
+						}
+
 					}
 				
 				_dirty = false;

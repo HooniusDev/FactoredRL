@@ -8,8 +8,8 @@ namespace Factored
 {
 	public class Program
 	{
-		public static readonly int screenWidth = 80;
-		public static readonly int screenHeight = 60;
+		public static readonly int screenWidth = 60;
+		public static readonly int screenHeight = 50;
 
 		public static ConsoleList _rootConsole { get; private set; }
 
@@ -26,7 +26,6 @@ namespace Factored
 
 			// Start the game.
 			SadConsole.Engine.Run();
-
 		}
 
 		private static void Engine_EngineStart( object sender, EventArgs e )

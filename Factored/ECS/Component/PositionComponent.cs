@@ -32,6 +32,9 @@ namespace Factored.ECS.Component
 					RenderComponent rc = ComponentManager.GetComponent<RenderComponent>( OwnerID );
 					if ( rc != null )
 						rc.Changed = true;
+					//FovComponent fc = ComponentManager.GetComponent<FovComponent>( OwnerID );
+					//if ( fc != null )
+					//	fc.changed = true;
 				}
 			}		
 		  }

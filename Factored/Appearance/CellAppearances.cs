@@ -28,6 +28,7 @@ namespace Factored.MapObjects
 		public static readonly CellAppearance StairsUpFov = new CellAppearance( Colors.Gold, Colors.DefaultBG, 60 );
 		public static readonly CellAppearance DoorOpenFov = new CellAppearance( Swatch.DbWood, Colors.DefaultBG, 95 );
 		public static readonly CellAppearance DoorClosedFov = new CellAppearance( Swatch.DbWood, Colors.DefaultBG, 43 );
+		public static readonly CellAppearance OUTOFFov = new CellAppearance( Color.Black, Swatch.AlternateDarkest, 10 );
 
 		public static readonly ICellEffect ExploredEffect = new Recolor()
 		{
@@ -37,6 +38,16 @@ namespace Factored.MapObjects
 			DoBackground = true,
 			CloneOnApply = false
 		};
+
+		public static readonly ICellEffect HiddenEffect = new Recolor()
+		{
+			Foreground = Color.Black,
+                Background = Color.Black,
+                DoForeground = true,
+                DoBackground = true,
+                CloneOnApply = false
+
+			};
 
 		public static readonly ICellEffect HighlighEffect = new Recolor()
 		{

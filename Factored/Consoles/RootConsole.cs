@@ -13,8 +13,8 @@ namespace Factored.Consoles
 {
 	public static class GameConstants
 	{
-		public static readonly int MapWidth = 80;
-		public static readonly int MapHeight = 80;
+		public static readonly int MapWidth = 40;
+		public static readonly int MapHeight = 40;
 
 		public static MapSystem Map;
 

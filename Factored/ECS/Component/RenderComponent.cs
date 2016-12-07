@@ -20,7 +20,7 @@ namespace Factored.ECS.Component
 		public CellAppearance Appearance;
 		public ICellEffect Explored { get; set; }
 
-		public bool Changed = true;
+		public bool Changed = false;
 		public int Layer = 0;
 
 		public RenderComponent( int owner, CellAppearance appearance, int layer = 0 )

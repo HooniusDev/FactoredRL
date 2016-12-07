@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Factored.ECS.Component
+namespace Factored.Systems
 {
-	class ComponentTypes
+	public class SystemManager
 	{
+
 
 	}
 }

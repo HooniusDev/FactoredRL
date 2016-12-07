@@ -11,13 +11,19 @@ namespace Factored.ECS.Interfaces
 	public interface IMap
 	{
 		bool IsValid( int x, int y );
-		bool isWalkable( Point tile );
-		bool isExplored( Point tile );
-		bool isTransparent( Point tile );
+		bool IsWalkable( Point tile );
+		bool IsExplored( Point tile );
+		bool IsTransparent( Point tile );
 		void SetTile( Point tile, TileType type );
-		TileType GetTile( Point tile );
+		TileType GetTileType( Point tile );
+		TileType GetTileType( int x, int y );
 
 		bool IsInFov( int eid, int eid1 );
+		void SetFov( Point tile);
+		int Height();
+		int Width();
+		void ResetFov();
+		
 
 	}
 }

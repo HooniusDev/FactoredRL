@@ -35,7 +35,7 @@ namespace Factored.Consoles
 			RootConsole.mapViewport.renderer.HighlightTile( mapCell );
 			//mouseConsole.VirtualCursor.Position = infoPos;
 			VirtualCursor.Print( mapCell.ToString() ).Right( 2 );
-			VirtualCursor.Print( GameConstants.Map.GetTile( mapCell ).ToString() ).CarriageReturn();
+			VirtualCursor.Print( GameConstants.Map.GetTileType( mapCell ).ToString() ).CarriageReturn();
 			//VirtualCursor.Position = new Point( 40, 40 );
 			//VirtualCursor.Print( "AAAAAAAAAAAAAAAAAAAAAAAAAAARGHH!!" );
 			//SetCellAppearance( 2, 2, new CellAppearance( Color.Blue, Color.Yellow, 42 ));
@@ -43,13 +43,13 @@ namespace Factored.Consoles
 
 		}
 
-		//public override bool ProcessMouse( MouseInfo info )
-		//{
-		//	System.Console.WriteLine( "Process ProcessMouse Gui" );
-		//	RootConsole.guiConsole.Mouse( info );
+		public override bool ProcessMouse( MouseInfo info )
+		{
+			//System.Console.WriteLine( "Process ProcessMouse Gui" );
+			RootConsole.guiConsole.Mouse( info );
 
-		//	return base.ProcessMouse( info );
-		//}
+			return base.ProcessMouse( info );
+		}
 	}
 	
 

@@ -61,6 +61,7 @@ namespace Factored
 				ComponentManager.AddComponent( Player, pc );
 				PlayerControlComponent pcc = new PlayerControlComponent( Player );
 				ComponentManager.AddComponent( Player, pcc );
+				ComponentManager.AddComponent( Player, new FovComponent( Player ));
 			}
 			return 0;
 		}

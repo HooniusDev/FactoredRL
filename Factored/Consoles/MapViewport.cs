@@ -47,7 +47,7 @@ namespace Factored.Consoles
 			//centerView( ComponentManager.GetComponent<PositionComponent>( EntityManager.Player ).Position);
 			
 			base.Render();
-			RootConsole.guiConsole.Render();
+			//RootConsole.guiConsole.Render();
 			renderer.RenderMap( map );
 			renderer.RenderEntities();
 		}
@@ -65,8 +65,17 @@ namespace Factored.Consoles
 				if ( canDo )
 				{
 					if ( action is MoveAction )
+					{
 						renderer.RedrawTile( pc.Position );
+						if ( p != null )
+						{
+							//centerView( pc.Position );
+							//ComponentManager.GetComponent<RenderComponent>( 0 ).Changed = true;
+							renderer._dirty = true;
+						}
+					}
 					action.Perform();
+					Fov.GetFov( GameConstants.Map, pc.Position, 6 );
 				}
 
 			}
@@ -79,8 +88,6 @@ namespace Factored.Consoles
 			//System.Console.WriteLine( "Process mouse Gui" );
 			RootConsole.guiConsole.Mouse( info );
 			
-			
-
 			return base.ProcessMouse( info );
 		}
 
@@ -142,6 +149,7 @@ namespace Factored.Consoles
 
 			//Center view to Hero
 			TextSurface.RenderArea = new Rectangle( point.X - ( TextSurface.RenderArea.Width / 2 ),  point.Y - ( TextSurface.RenderArea.Height / 2 ), TextSurface.RenderArea.Width, TextSurface.RenderArea.Height );
+			RootConsole.guiConsole.TextSurface.RenderArea = TextSurface.RenderArea;
 			//TextSurface.RenderArea = new Microsoft.Xna.Framework.Rectangle( 50, 50, 100, 100 );
 			//System.Console.WriteLine( "renrer area: " + TextSurface.RenderArea.ToString() );
 			//System.Console.WriteLine( "Player pos: " + GameConstants.player.Position.ToString() );

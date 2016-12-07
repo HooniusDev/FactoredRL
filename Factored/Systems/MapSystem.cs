@@ -43,6 +43,24 @@ namespace Factored.Systems
 			AddPlayer();
 		}
 
+		public void ResetFov()
+		{
+			for ( int x = 0; x < mapRect.Width; x++ )
+			{
+				for ( int y = 0; y < mapRect.Height; y++ )
+				{
+					if ( isInFov[x, y] )
+					{
+						isInFov[x, y] = false;
+						isExplored[x, y] = true;
+						tilesToUpdate.Add(new Point( x, y ));
+					}
+				}
+			}
+		}
+		
+	
+
 		public void SetBlockMoveComponent( int e, Point tile )
 		{
 			blockintEntity[tile.X, tile.Y] = e;
@@ -109,7 +127,7 @@ namespace Factored.Systems
 					isExplored[x, y] = false;
 					isTransparent[x, y] = false;
 					blockintEntity[x, y] = -1;
-					isInFov[x, y] = true;
+					isInFov[x, y] = false;
 					dynamicLight[x, y] = 0;
 					staticLight[x, y] = 0;
 					permanentLight[x, y] = 0;
@@ -132,7 +150,7 @@ namespace Factored.Systems
 			return mapRect.Contains( tile );
 		}
 
-		bool IMap.isWalkable( Point tile )
+		bool IMap.IsWalkable( Point tile )
 		{
 			System.Console.WriteLine( "blocked by: " + blockintEntity[tile.X, tile.Y].ToString() );
 			if ( blockintEntity[tile.X, tile.Y] != -1 )
@@ -161,14 +179,18 @@ namespace Factored.Systems
 			}
 		}
 
-		bool IMap.isExplored( Point tile )
+		bool IMap.IsExplored( Point tile )
 		{
 			return isExplored[tile.X, tile.Y];
 		}
 
-		bool IMap.isTransparent( Point tile )
+		bool IMap.IsTransparent( Point tile )
 		{
-			return isTransparent[tile.X, tile.Y];
+			if ( IsValid( tile ) )
+				return isTransparent[tile.X, tile.Y];
+			else
+				return false;
+
 		}
 
 		bool IsInFov( Point tile )
@@ -249,17 +271,33 @@ namespace Factored.Systems
 			}
 		}
 
-		public TileType GetTile( Point tile )
+		public TileType GetTileType( Point tile )
 		{
-			return GetTile(tile.X, tile.Y);
+			return GetTileType(tile.X, tile.Y);
 		}
 
-		public TileType GetTile( int x, int y )
+		public TileType GetTileType( int x, int y )
 		{
-			if ( IsValid( x, y ))
+			if ( IsValid( x, y ) )
 				return tileType[x, y];
 			else
 				return TileType.None;
+		}
+
+		public int Height()
+		{
+			return mapRect.Height;
+		}
+
+		public int Width()
+		{
+			return mapRect.Width;
+		}
+
+		public void SetFov( Point tile )
+		{
+			isInFov[tile.X, tile.Y] = true;
+			tilesToUpdate.Add( tile );
 		}
 
 		public enum TileType
