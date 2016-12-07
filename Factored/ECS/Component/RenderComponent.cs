@@ -47,7 +47,6 @@ namespace Factored.ECS.Component
 
 		public void Render( Cell sadConsoleCell )
 		{
-			System.Console.WriteLine( "Render ME ! " + OwnerID.ToString() );
 			//if ( Changed == false )
 			//	return;
 			Appearance.CopyAppearanceTo( sadConsoleCell );

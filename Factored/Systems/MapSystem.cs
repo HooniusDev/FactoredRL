@@ -24,19 +24,28 @@ namespace Factored.Systems
 		public bool[,] isExplored { get; private set; }
 		public bool[,] isTransparent { get; private set; }
 		public bool[,] isInFov { get; private set; }
+		public int[,] blockintEntity { get; private set; }
 		public TileType[,] tileType { get; private set; }
 		public int[,] dynamicLight { get; private set; }
 		public int[,] staticLight { get; private set; }
 		public int[,] permanentLight { get; private set; }
 
+		public List<Point> tilesToUpdate;
+
 		public MapSystem( int width, int height )
 		{
 			GameConstants.Map = this;
 			mapRect = new Rectangle( 0, 0, width, height );
+			tilesToUpdate = new List<Point>();
 			init();
 			buildDefaultMap();
 			EntityManager.CreatePlayer();
 			AddPlayer();
+		}
+
+		public void SetBlockMoveComponent( int e, Point tile )
+		{
+			blockintEntity[tile.X, tile.Y] = e;
 		}
 
 		private void AddPlayer()
@@ -89,6 +98,7 @@ namespace Factored.Systems
 			isTransparent = new bool[mapRect.Width, mapRect.Height];
 			isInFov = new bool[mapRect.Width, mapRect.Height];
 			tileType = new TileType[mapRect.Width, mapRect.Height];
+			blockintEntity = new int[mapRect.Width, mapRect.Height];
 			dynamicLight = new int[mapRect.Width, mapRect.Height];
 			staticLight = new int[mapRect.Width, mapRect.Height];
 			permanentLight = new int[mapRect.Width, mapRect.Height];
@@ -98,6 +108,7 @@ namespace Factored.Systems
 					isWalkable[x, y] = false;
 					isExplored[x, y] = false;
 					isTransparent[x, y] = false;
+					blockintEntity[x, y] = -1;
 					isInFov[x, y] = true;
 					dynamicLight[x, y] = 0;
 					staticLight[x, y] = 0;
@@ -123,7 +134,31 @@ namespace Factored.Systems
 
 		bool IMap.isWalkable( Point tile )
 		{
-			return isWalkable[tile.X, tile.Y];
+			System.Console.WriteLine( "blocked by: " + blockintEntity[tile.X, tile.Y].ToString() );
+			if ( blockintEntity[tile.X, tile.Y] != -1 )
+				return false;
+			else
+				return isWalkable[tile.X, tile.Y];
+		}
+
+		public int getBlockinEntityID( Point tile )
+		{
+				return blockintEntity[tile.X, tile.Y];
+		}
+
+		public bool IsWalkable( Point tile )
+		{
+			if ( blockintEntity[tile.X, tile.Y] != -1 )
+			{
+				System.Console.WriteLine( "blocked by: " + blockintEntity[tile.X, tile.Y].ToString() );
+				return false;
+			}
+			else
+			{
+				System.Console.WriteLine( "blocked by isWalkable : " + tile.ToString() + ", " + isWalkable[tile.X, tile.Y] .ToString());
+				return isWalkable[tile.X, tile.Y];
+
+			}
 		}
 
 		bool IMap.isExplored( Point tile )
@@ -157,6 +192,7 @@ namespace Factored.Systems
 						isTransparent[tile.X, tile.Y] = true;
 						permanentLight[tile.X, tile.Y] = 100;
 						tileType[tile.X, tile.Y] = TileType.Floor;
+						tilesToUpdate.Add( tile );
 						break;
 					}
 				case TileType.Wall:
@@ -164,6 +200,7 @@ namespace Factored.Systems
 						isWalkable[tile.X, tile.Y] = false;
 						isTransparent[tile.X, tile.Y] = false;
 						tileType[tile.X, tile.Y] = TileType.Wall;
+						tilesToUpdate.Add( tile );
 						break;
 					}
 				case TileType.Corridor:
@@ -172,6 +209,7 @@ namespace Factored.Systems
 						isTransparent[tile.X, tile.Y] = true;
 						permanentLight[tile.X, tile.Y] = 40;
 						tileType[tile.X, tile.Y] = TileType.Corridor;
+						tilesToUpdate.Add( tile );
 						break;
 					}
 				case TileType.Door:
@@ -180,10 +218,10 @@ namespace Factored.Systems
 						isTransparent[tile.X, tile.Y] = true;
 						permanentLight[tile.X, tile.Y] = 100;
 						tileType[tile.X, tile.Y] = TileType.Floor;
+						tilesToUpdate.Add( tile );
 						int e = EntityManager.CreateEntity();
 						ComponentManager.AddComponent( e, new PositionComponent( e, tile ) );
 						ComponentManager.AddComponent( e, new RenderComponent( e, CellAppearances.DoorOpenFov, 1 ) );
-						ComponentManager.AddComponent( e, new PhysicalAttributes( e, false, false, EntitySizes.OccupiesCell ) );
 						ComponentManager.AddComponent( e, new DoorComponent( e ) );
 						//map.Add( tile, e );
 						break;
@@ -194,6 +232,7 @@ namespace Factored.Systems
 						isTransparent[tile.X, tile.Y] = true;
 						permanentLight[tile.X, tile.Y] = 100;
 						tileType[tile.X, tile.Y] = TileType.Floor;
+						tilesToUpdate.Add( tile );
 						int e = EntityManager.CreateEntity();
 						ComponentManager.AddComponent( e, new PositionComponent( e, tile ) );
 						ComponentManager.AddComponent( e, new RenderComponent( e, CellAppearances.StairsUpFov, 1 ) );

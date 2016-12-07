@@ -11,22 +11,20 @@ namespace Factored.ECS.Component
 	{
 		public int OwnerID { get; private set; }
 
-		public bool BlockMove { get; set; }
-		public bool BlockLight { get; set; }
-
 		public EntitySizes Size { get; set; }
+
+		public int Weight { get; set; }
 
 		public int GetOwner()
 		{
 			return OwnerID;
 		}
 
-		public PhysicalAttributes(int owner, bool blockMove, bool blockLight, EntitySizes size = EntitySizes.None )
+		public PhysicalAttributes(int owner, EntitySizes size = EntitySizes.None )
 		{
 			OwnerID = owner;
-			BlockMove = blockMove;
-			BlockLight = blockLight;
 			Size = size;
+			Weight = 0;
 		}
 	}
 

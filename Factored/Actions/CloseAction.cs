@@ -42,7 +42,7 @@ namespace Factored.Actions
 		public void Perform()
 		{
 			foreach ( DoorComponent c in doors )
-				c.Close();
+				c.Close( Performer );
 		}
 	}
 }

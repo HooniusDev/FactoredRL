@@ -56,20 +56,20 @@ namespace Factored.Consoles
 		{
 
 			base.Update();
-			//PlayerControlComponent p = ComponentManager.GetComponent<PlayerControlComponent>( 0 );
-			//PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( 0 );
-			//IAction action = p.GetAction();
-			//if ( action != null )
-			//{
-			//	bool canDo = action.CanPerform();
-			//	if ( canDo )
-			//	{
-			//		if ( action is MoveAction )
-			//			renderer.RedrawTile( pc.Position );
-			//		action.Perform();
-			//	}
-	
-			//}
+			PlayerControlComponent p = ComponentManager.GetComponent<PlayerControlComponent>( 0 );
+			PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( 0 );
+			IAction action = p.GetAction();
+			if ( action != null )
+			{
+				bool canDo = action.CanPerform();
+				if ( canDo )
+				{
+					if ( action is MoveAction )
+						renderer.RedrawTile( pc.Position );
+					action.Perform();
+				}
+
+			}
 
 		}
 

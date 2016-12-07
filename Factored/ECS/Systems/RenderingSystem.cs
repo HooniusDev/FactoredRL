@@ -22,6 +22,8 @@ namespace Factored.ECS.Systems
 		private Point lastHighlight = new Point(0,0);
 		private Point newHighlight;
 
+		private bool _dirty = true;
+
 		public RenderingSystem( Console canvas )
 		{
 			this.canvas = canvas;
@@ -40,6 +42,7 @@ namespace Factored.ECS.Systems
 
 		public void RedrawTile( Point tile )
 		{
+			
 			//get position components for the tile and set rendercomponents .changed to true
 			List<PositionComponent> pclist = ComponentManager.GetComponents<PositionComponent>();
 			foreach ( PositionComponent pc in pclist )
@@ -53,61 +56,80 @@ namespace Factored.ECS.Systems
 			}
 		}
 
+		public void SetTileAppearance( int x, int y, TileType type )
+		{
+			switch ( type )
+			{
+				case ( TileType.Floor ):
+					{
+						canvas.SetCellAppearance(x,y, CellAppearances.FloorFov );
+						break;
+					}
+				case ( TileType.Wall ):
+					{
+						canvas.SetCellAppearance( x, y, CellAppearances.WallFov );
+						break;
+					}
+				case ( TileType.Corridor ):
+					{
+						canvas.SetCellAppearance( x, y, CellAppearances.CorridorFov );
+						break;
+					}
+				case ( TileType.None ):
+					{
+						break;
+					}
+				default:
+					{
+						break;
+					}
+			}
+		}
+
 		public void RenderMap( MapSystem map )
 		{
-			for ( int x = 0; x < map.mapRect.Width; x++ )
-				for ( int y = 0; y < map.mapRect.Height; y++ )
-				{
-					if ( map.isInFov[x, y] == true )
-					{
-						if ( canvas[x, y].Effect != null && canvas[x, y].Effect != CellAppearances.HighlighEffect )
-						{
-							canvas[x, y].Effect.Clear( canvas[x, y] );
-							canvas[x, y].Effect.Apply( canvas[x, y] );
-						}
 
-						switch ( map.GetTile( x, y ) )
+			foreach ( Point tile in map.tilesToUpdate )
+			{
+				SetTileAppearance( tile.X, tile.Y, map.GetTile( tile ) );
+			}
+			map.tilesToUpdate.Clear();
+			
+			if ( _dirty )
+			{
+				for ( int x = 0; x < map.mapRect.Width; x++ )
+					for ( int y = 0; y < map.mapRect.Height; y++ )
+					{
+						if ( map.isInFov[x, y] == true )
 						{
-							case ( TileType.Floor ):
-								{
-									canvas.SetCellAppearance( x, y, CellAppearances.FloorFov );
-									break;
-								}
-							case ( TileType.Wall ):
-								{
-									canvas.SetCellAppearance( x, y, CellAppearances.WallFov );
-									break;
-								}
-							case ( TileType.Corridor ):
-								{
-									canvas.SetCellAppearance( x, y, CellAppearances.CorridorFov );
-									break;
-								}
-							case ( TileType.None ):
-								{
-									break;
-								}
-							default:
-								{
-									break;
-								}
+							if ( canvas[x, y].Effect != null && canvas[x, y].Effect != CellAppearances.HighlighEffect )
+							{
+								canvas[x, y].Effect.Clear( canvas[x, y] );
+								canvas[x, y].Effect.Apply( canvas[x, y] );
+							}
+
+							SetTileAppearance(x,y, map.GetTile( x, y ) );
+							
+						}
+						else if ( map.isExplored[x, y] )
+						{
+							if ( map.GetTile( x, y ) != TileType.None )
+							{
+								canvas.SetEffect( x, y, CellAppearances.ExploredEffect );
+								canvas[x, y].Effect.Apply( canvas[x, y] );
+							}
+
 						}
 					}
-					else if ( map.isExplored[x, y] )
-					{
-						if ( map.GetTile( x, y ) != TileType.None )
-						{
-							canvas.SetEffect( x, y, CellAppearances.ExploredEffect );
-							canvas[x, y].Effect.Apply( canvas[x, y] );
-						}
-
-					}
-				}
-			if ( map.IsValid( newHighlight ))
-				{
+				
+				_dirty = false;
+			}
+			if ( map.IsValid( newHighlight ) )
+			{
 				if ( lastHighlight != null )
 				{
 					canvas.Clear( lastHighlight.X, lastHighlight.Y );
+					map.tilesToUpdate.Add( lastHighlight );
 				}
 				canvas[newHighlight.X, newHighlight.Y].Effect = CellAppearances.HighlighEffect;
 				canvas[newHighlight.X, newHighlight.Y].Effect.Apply( canvas[newHighlight.X, newHighlight.Y] );
@@ -118,7 +140,7 @@ namespace Factored.ECS.Systems
 		{
 			List<RenderComponent> rcList = ComponentManager.GetComponents<RenderComponent>();
 			
-			for ( int i = 0; i < rcList.Count; i++ )
+			for ( int i = rcList.Count-1; i >= 0; i-- )
 			{
 				RenderComponent rc = ComponentManager.GetComponent<RenderComponent>( rcList[i].OwnerID );
 				PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( rcList[i].OwnerID );

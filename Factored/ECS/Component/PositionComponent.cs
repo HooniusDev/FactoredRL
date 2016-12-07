@@ -40,6 +40,11 @@ namespace Factored.ECS.Component
 		public int X { get { return Position.X; } }
 		public int Y { get { return Position.Y; } }
 
+		public PositionComponent( int owner )
+		{
+			OwnerID = owner;
+		}
+
 		public PositionComponent( int owner, Point position )
 		{
 			OwnerID = owner;

@@ -71,6 +71,7 @@
     <Compile Include="Appearance\CellAppearances.cs" />
     <Compile Include="ECS\ComponentManager.cs" />
     <Compile Include="ECS\Component\BasicAIComponent.cs" />
+    <Compile Include="ECS\Component\BlockMoveComponent.cs" />
     <Compile Include="ECS\Component\ComponentTypes.cs" />
     <Compile Include="ECS\Component\PhysicalAttributes.cs" />
     <Compile Include="ECS\Component\PlayerControlComponent.cs" />

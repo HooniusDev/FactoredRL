@@ -32,42 +32,29 @@ namespace Factored.ECS.Component
 				Close();
 		}
 
-		public void Open()
+		public void Open( int e = -1)
 		{
-			if ( OwnerID == EntityManager.Player )
+			if ( e == EntityManager.Player )
 				System.Console.WriteLine( "You manage to open the door." );
 			IsOpen = true;
 			RenderComponent rc = ComponentManager.GetComponent<RenderComponent>( OwnerID );
+			BlockMoveComponent bmc = ComponentManager.GetComponent<BlockMoveComponent>( OwnerID );
+			if (bmc != null)
+				bmc.RemoveBlockComponent();
 			if ( rc != null )
 				rc.SetCellAppearance( CellAppearances.DoorOpenFov );
-			PhysicalAttributes pa = ComponentManager.GetComponent<PhysicalAttributes>( OwnerID );
-			if ( pa == null )
-				pa = new PhysicalAttributes( OwnerID, false, false, EntitySizes.Big );
-			else
-			{
-				pa.BlockLight = false;
-				pa.BlockMove = false;
-			}
-
+		
 		}
 
-		public void Close()
+		public void Close( int e = -1)
 		{
-			if ( OwnerID == EntityManager.Player )
+			if ( e == EntityManager.Player )
 				System.Console.WriteLine( "You gently slam the door shut." );
 			IsOpen = false;
+			ComponentManager.AddComponent( OwnerID, new BlockMoveComponent( OwnerID ) );
 			RenderComponent rc = ComponentManager.GetComponent<RenderComponent>( OwnerID );
 			if ( rc != null )
-				rc.SetCellAppearance( CellAppearances.DoorClosedFov);
-			PhysicalAttributes pa = ComponentManager.GetComponent<PhysicalAttributes>( OwnerID );
-			if ( pa == null )
-				pa = new PhysicalAttributes( OwnerID, true, true, EntitySizes.Big );
-			else
-			{
-				pa.BlockLight = true;
-				pa.BlockMove = true;
-			}
-
-		}	
+				rc.SetCellAppearance( CellAppearances.DoorClosedFov );
+		}
 	}
 }

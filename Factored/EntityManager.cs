@@ -26,10 +26,8 @@ namespace Factored
 
 		public static void Init()
 		{
-			Player = CreateEntity();
+			Player = CreatePlayer();
 		
-
-
 			Map = CreateEntity(); //Create Map
 								  //CreateTestEntities.Create();
 			//CreatePlayer();
@@ -54,14 +52,12 @@ namespace Factored
 		{
 			if ( playerCreated == false )
 			{
-				//Player = CreateEntity(); //Create Player
+				Player = CreateEntity(); //Create Player
 				playerCreated = true;
-				int Player = 0;
-				_entities[0] = Player;
 				CellAppearance ca = new CellAppearance( Colors.Player, Colors.FloorBackgroundFov, 64 );
 				RenderComponent rc = new RenderComponent( Player, ca, 2 );
 				ComponentManager.AddComponent( Player, rc );
-				PositionComponent pc = new PositionComponent( Player, new Point( 0, 0 ) );
+				PositionComponent pc = new PositionComponent( Player  );
 				ComponentManager.AddComponent( Player, pc );
 				PlayerControlComponent pcc = new PlayerControlComponent( Player );
 				ComponentManager.AddComponent( Player, pcc );

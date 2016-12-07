@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Factored.Consoles;
 
 namespace Factored.Actions
 {
@@ -24,28 +25,43 @@ namespace Factored.Actions
 
 		public bool CanPerform()
 		{
-			// Check The Target Tile for any PhysicalComponent.BlocksMove
-			//if ( MapComponent.IsWalkable( Target ) )
-			//	return true;
+			//System.Console.WriteLine( "Can=: " + Target.ToString() );
+			//Check The Target Tile 
+			if ( !GameConstants.Map.IsWalkable( Target ) )
+			{
+				//System.Console.WriteLine( "Blocked: " + Target.ToString() );
+				//find blocking entity
+				int e = GameConstants.Map.getBlockinEntityID( Target );
+				List<DoorComponent> dc = ComponentManager.GetComponentsAtTile<DoorComponent>( Target );
+				foreach ( DoorComponent c in dc )
+				{
+					c.Open(Performer);
+					//System.Console.WriteLine( "Door: " + c.IsOpen.ToString() );
+					
+				}
+				return false;
+			}
+			
 			//else
 			//{
+			//	//its a door so open it...
+			//	// TODO implement a open door action..
 			//	List<DoorComponent> dc = ComponentManager.GetComponentsAtTile<DoorComponent>( Target );
 			//	foreach ( DoorComponent c in dc )
 			//	{
 			//		PhysicalAttributes pa = ComponentManager.GetComponent<PhysicalAttributes>( c.OwnerID );
 			//		System.Console.WriteLine( "Door: " + c.IsOpen.ToString() );
-			//		System.Console.WriteLine( "BlockMove: " + pa.BlockMove.ToString());
 			//	}
-					
+
 			//}
-			
-			return false;
+
+			return true;
 		}
 
 		public void Perform()
 		{
 			PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( Performer );
-
+			GameConstants.Map.tilesToUpdate.Add( pc.Position );
 			pc.Position = Target;
 			//throw new NotImplementedException();
 		}
