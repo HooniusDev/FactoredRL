@@ -48,8 +48,8 @@ namespace Factored.Consoles
 			
 			base.Render();
 			//RootConsole.guiConsole.Render();
-			renderer.RenderMap( map );
-			renderer.RenderEntities();
+			//renderer.RenderMap( map );
+			//renderer.RenderEntities();
 		}
 
 		public override void Update()

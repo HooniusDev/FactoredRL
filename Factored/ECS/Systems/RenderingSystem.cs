@@ -86,7 +86,7 @@ namespace Factored.ECS.Systems
 			}
 		}
 
-
+		/*
 		public void RenderMap( MapSystem map )
 		{
 
@@ -172,6 +172,7 @@ namespace Factored.ECS.Systems
 				}
 			}
 		}
+		*/
 		//public void Process()
 		//{
 

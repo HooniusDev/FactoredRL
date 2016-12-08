@@ -16,6 +16,9 @@ namespace Factored.Consoles
 		public static readonly int MapWidth = 40;
 		public static readonly int MapHeight = 40;
 
+		public static int ScreenWidth { get; set; }
+		public static int ScreenHeight { get; set; }
+
 		public static MapSystem Map;
 
 		public static Random random;
@@ -27,22 +30,33 @@ namespace Factored.Consoles
 
 		public static MapViewport mapViewport { get; private set; }
 
+		public static MapLayerConsole MapLayer { get; private set; }
+		public static EntityLayerConsole EntityLayer { get; private set; }
+		public static Console GuiLayer { get; private set; }
 		public static GuiConsole guiConsole;
 
-		public RootConsole()
+		public RootConsole( int width, int height )
 		{
-			EntityManager.Init();
+			GameConstants.ScreenWidth = width;
+			GameConstants.ScreenHeight = height;
+
 			GameConstants.random = new Random();
-			mapViewport = new MapViewport( Program.screenWidth, Program.screenHeight );
-			//Player p = GameConstants.player;
-			//System.Console.WriteLine( "RootConsole" );
-			guiConsole = new GuiConsole( Program.screenWidth, Program.screenHeight );
-			
-			
-			Add( guiConsole );
-			Add( mapViewport );
+
+			EntityManager.Init();
+
+			MapLayer = new MapLayerConsole( width, height, GameConstants.Map, GameConstants.MapWidth, GameConstants.MapHeight );
+			EntityLayer = new EntityLayerConsole( width, height, GameConstants.Map, GameConstants.MapWidth, GameConstants.MapHeight );
+
+			Add( MapLayer );
+			Add( EntityLayer );
 
 
+		}
+
+		public override void Render()
+		{
+			base.Render();
+			//EntityLayer.RenderEntities();
 		}
 	}
 }

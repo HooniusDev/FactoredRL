@@ -65,7 +65,9 @@
     <Compile Include="Actions\MoveAction.cs" />
     <Compile Include="Appearance\Colors.cs" />
     <Compile Include="Appearance\Swatch.cs" />
+    <Compile Include="Consoles\EntityLayerConsole.cs" />
     <Compile Include="Consoles\GuiConsole.cs" />
+    <Compile Include="Consoles\MapLayerConsole.cs" />
     <Compile Include="Consoles\MapViewport.cs" />
     <Compile Include="Consoles\RootConsole.cs" />
     <Compile Include="Appearance\CellAppearances.cs" />
@@ -85,7 +87,6 @@
     <Compile Include="ECS\Interfaces\IMap.cs" />
     <Compile Include="ECS\Systems\Fov.cs" />
     <Compile Include="ECS\Systems\RenderingSystem.cs" />
-    <Compile Include="ECS\Systems\RenderSystem.cs" />
     <Compile Include="EntityManager.cs" />
     <Compile Include="MapObjects\Corridor.cs" />
     <Compile Include="MapObjects\Features\Door.cs" />

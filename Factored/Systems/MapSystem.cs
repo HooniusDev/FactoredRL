@@ -20,17 +20,21 @@ namespace Factored.Systems
 
 		public List<Rectangle> rooms { get; private set; }
 
-		public bool[,] isWalkable { get; private set; }
-		public bool[,] isExplored { get; private set; }
-		public bool[,] isTransparent { get; private set; }
-		public bool[,] isInFov { get; private set; }
-		public int[,] blockintEntity { get; private set; }
-		public TileType[,] tileType { get; private set; }
-		public int[,] dynamicLight { get; private set; }
-		public int[,] staticLight { get; private set; }
-		public int[,] permanentLight { get; private set; }
+		bool[,] isWalkable { get; set; }
+		bool[,] isExplored { get; set; }
+		bool[,] isTransparent { get; set; }
+		bool[,] isFov { get; set; }
+		int[,] blockintEntity { get; set; }
+		TileType[,] tileType { get; set; }
+		int[,] dynamicLight { get; set; }
+		int[,] staticLight { get; set; }
+		int[,] permanentLight { get; set; }
 
 		public List<Point> tilesToUpdate;
+		public List<Point> GetTilesToDraw()
+		{
+			return tilesToUpdate;
+		}
 
 		public MapSystem( int width, int height )
 		{
@@ -43,23 +47,10 @@ namespace Factored.Systems
 			AddPlayer();
 		}
 
-		public void ResetFov()
+		public void TileChanged( int x, int y )
 		{
-			for ( int x = 0; x < mapRect.Width; x++ )
-			{
-				for ( int y = 0; y < mapRect.Height; y++ )
-				{
-					if ( isInFov[x, y] )
-					{
-						isInFov[x, y] = false;
-						isExplored[x, y] = true;
-						tilesToUpdate.Add(new Point( x, y ));
-					}
-				}
-			}
+			tilesToUpdate.Add( new Point(x,y) );
 		}
-		
-	
 
 		public void SetBlockMoveComponent( int e, Point tile )
 		{
@@ -102,7 +93,7 @@ namespace Factored.Systems
 				for ( int y = 0; y < mapRect.Height; y++ )
 				{
 					TileType type = ( TileType ) b.GetCell( x, y );
-					SetTile( new Point( x, y ), type );
+					SetTileType( new Point( x, y ), type );
 				}
 
 			rooms = b.GetRooms();
@@ -114,7 +105,7 @@ namespace Factored.Systems
 			isWalkable = new bool[mapRect.Width, mapRect.Height];
 			isExplored = new bool[mapRect.Width, mapRect.Height];
 			isTransparent = new bool[mapRect.Width, mapRect.Height];
-			isInFov = new bool[mapRect.Width, mapRect.Height];
+			isFov = new bool[mapRect.Width, mapRect.Height];
 			tileType = new TileType[mapRect.Width, mapRect.Height];
 			blockintEntity = new int[mapRect.Width, mapRect.Height];
 			dynamicLight = new int[mapRect.Width, mapRect.Height];
@@ -127,85 +118,78 @@ namespace Factored.Systems
 					isExplored[x, y] = false;
 					isTransparent[x, y] = false;
 					blockintEntity[x, y] = -1;
-					isInFov[x, y] = false;
+					isFov[x, y] = true;
 					dynamicLight[x, y] = 0;
 					staticLight[x, y] = 0;
 					permanentLight[x, y] = 0;
 				}
 		}
 
-		public void SetExplored( Point tile )
-		{
-			isExplored[tile.X, tile.Y] = true;
-		}
+		#region  ############## IMAP ##############
 
-		#region  ##############Tests##############
+		public bool IsValid( Point tile )
+		{
+			return IsValid( tile.X, tile.Y );
+		}
 		public bool IsValid( int x, int y )
 		{
 			return mapRect.Contains( new Point(x,y) );
 		}
 
-		public bool IsValid( Point tile )
-		{
-			return mapRect.Contains( tile );
-		}
-
-		bool IMap.IsWalkable( Point tile )
-		{
-			System.Console.WriteLine( "blocked by: " + blockintEntity[tile.X, tile.Y].ToString() );
-			if ( blockintEntity[tile.X, tile.Y] != -1 )
-				return false;
-			else
-				return isWalkable[tile.X, tile.Y];
-		}
-
-		public int getBlockinEntityID( Point tile )
-		{
-				return blockintEntity[tile.X, tile.Y];
-		}
-
 		public bool IsWalkable( Point tile )
 		{
-			if ( blockintEntity[tile.X, tile.Y] != -1 )
-			{
-				System.Console.WriteLine( "blocked by: " + blockintEntity[tile.X, tile.Y].ToString() );
-				return false;
-			}
-			else
-			{
-				System.Console.WriteLine( "blocked by isWalkable : " + tile.ToString() + ", " + isWalkable[tile.X, tile.Y] .ToString());
-				return isWalkable[tile.X, tile.Y];
-
-			}
+				return IsWalkable(tile.X, tile.Y);
 		}
-
-		bool IMap.IsExplored( Point tile )
+		public bool IsWalkable( int x, int y )
 		{
-			return isExplored[tile.X, tile.Y];
-		}
-
-		bool IMap.IsTransparent( Point tile )
-		{
-			if ( IsValid( tile ) )
-				return isTransparent[tile.X, tile.Y];
+			// Blocking Entity should be setting this flag through a system
+			if ( IsValid( x, y ) )
+				return isWalkable[x, y];
 			else
 				return false;
-
 		}
 
-		bool IsInFov( Point tile )
+		public bool IsExplored( Point tile )
 		{
-			return isInFov[tile.X, tile.Y];
+			return IsExplored( tile.X, tile.Y );
+		}
+		public bool IsExplored( int x, int y )
+		{
+			// Blocking Entity should be setting this flag through a system
+			if ( IsValid( x, y ) )
+				return isExplored[x, y];
+			else
+				return false;
 		}
 
-		public bool IsInFov( int eid, int eid1 )
+		public bool IsTransparent( Point tile )
 		{
-			throw new NotImplementedException();
+			return IsTransparent( tile.X, tile.Y );
 		}
-		#endregion
-
-		public void SetTile( Point tile, TileType type )
+		public bool IsTransparent( int x, int y )
 		{
+			if ( IsValid( x, y ) )
+				return isTransparent[x, y];
+			else
+				return false;
+		}
+
+		public bool IsFov( Point tile )
+		{
+			return IsFov( tile.X, tile.Y );
+		}
+		public bool IsFov( int x, int y )
+		{
+			if ( IsValid( x, y ) )
+				return isFov[x, y];
+			else
+				return false;
+		}
+
+		public void SetTileType( Point tile, TileType type )
+		{
+			if ( !IsValid( tile ) )
+				return;
 			switch ( type )
 			{
 				case TileType.Floor:
@@ -270,12 +254,15 @@ namespace Factored.Systems
 					}
 			}
 		}
+		public void SetTileType( int x, int y, TileType type )
+		{
+			SetTileType( new Point( x, y), type );
+		}
 
 		public TileType GetTileType( Point tile )
 		{
-			return GetTileType(tile.X, tile.Y);
+			return GetTileType( tile.X, tile.Y );
 		}
-
 		public TileType GetTileType( int x, int y )
 		{
 			if ( IsValid( x, y ) )
@@ -284,21 +271,69 @@ namespace Factored.Systems
 				return TileType.None;
 		}
 
+		public void SetFov( Point tile, bool inFov = true )
+		{
+			if ( !IsValid( tile ) )
+				return;
+			isFov[tile.X, tile.Y] = inFov;
+			tilesToUpdate.Add( tile );
+			if ( inFov == false )
+				isExplored[tile.X, tile.Y] = true;
+		}
+		public void SetFov( int x, int y, bool inFov = true )
+		{
+			if ( !IsValid( x,y ) )
+				return;
+			Point tile = new Point( x, y );
+			SetFov( tile, inFov );
+		}
+		public void SetFov( List<Point> tiles, bool inFov = true )
+		{
+			foreach ( Point tile in tiles )
+			{
+				SetFov( tile, inFov );
+			}
+
+		}
+
+		public bool HasLos( Point tile1, Point tile2 )
+		{
+			throw new NotImplementedException();
+		}
+
 		public int Height()
 		{
 			return mapRect.Height;
 		}
-
 		public int Width()
 		{
 			return mapRect.Width;
 		}
 
-		public void SetFov( Point tile )
+		public void ResetFov()
 		{
-			isInFov[tile.X, tile.Y] = true;
-			tilesToUpdate.Add( tile );
+			for ( int x = 0; x < mapRect.Width; x++ )
+			{
+				for ( int y = 0; y < mapRect.Height; y++ )
+				{
+					if ( isFov[x, y] )
+					{
+						isFov[x, y] = false;
+						isExplored[x, y] = true;
+						tilesToUpdate.Add( new Point( x, y ) );
+					}
+				}
+			}
 		}
+
+		#endregion
+
+
+		public int getBlockinEntityID( Point tile )
+		{
+				return blockintEntity[tile.X, tile.Y];
+		}
+
 
 		public enum TileType
 		{

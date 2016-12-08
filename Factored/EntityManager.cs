@@ -1,6 +1,7 @@
 ﻿using Factored.Consoles;
 using Factored.ECS;
 using Factored.ECS.Component;
+using Factored.Systems;
 using Factored.Test;
 using Factored.Utils;
 using Microsoft.Xna.Framework;
@@ -26,9 +27,9 @@ namespace Factored
 
 		public static void Init()
 		{
-			Player = CreatePlayer();
+			CreatePlayer();
 		
-			Map = CreateEntity(); //Create Map
+			CreateMap(); //Create Map
 								  //CreateTestEntities.Create();
 			//CreatePlayer();
 		}
@@ -46,6 +47,12 @@ namespace Factored
 		public static List<int> GetEntities()
 		{
 			return _entities;
+		}
+
+		public static void CreateMap()
+		{
+			//Map = CreateEntity();
+			GameConstants.Map = new MapSystem( GameConstants.MapWidth, GameConstants.MapHeight );
 		}
 
 		public static int CreatePlayer()

@@ -30,7 +30,7 @@ namespace Factored
 
 		private static void Engine_EngineStart( object sender, EventArgs e )
 		{
-			_rootConsole = new RootConsole();
+			_rootConsole = new RootConsole( screenWidth, screenHeight );
 			SadConsole.Engine.ConsoleRenderStack.Add( _rootConsole );
 			System.Console.WriteLine( "Welcome to the RL..." );
 			//_rootConsole.Print( 1, 1, "Welcome to SadConsole", Color.Aqua, Color.Black );
