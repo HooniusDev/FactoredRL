@@ -209,15 +209,14 @@ namespace Factored.ECS.Systems
 			#endregion
 
 			//Remove duplicate entries from FOV 
-			//List<Point> uniq = VisibleTiles.Distinct().ToList();
-			//VisibleTiles.Clear();
+			List<Point> uniq = VisibleTiles.Distinct().ToList();
 			//VisibleTiles = uniq;
 
 			//Tiles in new FOV set
-			System.Console.WriteLine( "Visibletiles: " + VisibleTiles.Count.ToString() );
-			foreach ( Point tile in VisibleTiles )
+			System.Console.WriteLine( "Visibletiles: " + uniq.Count.ToString() );
+			foreach ( Point tile in uniq )
 			{
-				map.SetFov( tile );
+				map.SetFov( tile, true );
 
 			}
 

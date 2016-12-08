@@ -32,8 +32,12 @@ namespace Factored.ECS.Interfaces
 		TileType GetTileType( int x, int y );
 
 		void SetFov( Point tile, bool fov = false );
+		void SetFov( List<Point> tiles, bool fov = false );
 
 		List<Point> GetTilesToDraw();
+		void ClearTilesToDraw();
+		List<Point> GetTilesToClear();
+		void ClearTilesToClear();
 
 		//void TileChanged( int x, int y );
 

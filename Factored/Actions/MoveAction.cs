@@ -61,7 +61,7 @@ namespace Factored.Actions
 		public void Perform()
 		{
 			PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( Performer );
-			GameConstants.Map.tilesToUpdate.Add( pc.Position );
+			GameConstants.Map.OnEntityMoved( Performer, pc.Position, Target );
 			pc.Position = Target;
 			//throw new NotImplementedException();
 		}

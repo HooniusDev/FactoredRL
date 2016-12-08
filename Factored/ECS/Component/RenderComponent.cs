@@ -47,8 +47,8 @@ namespace Factored.ECS.Component
 
 		public void Render( Cell sadConsoleCell )
 		{
-			if ( Changed == false )
-				return;
+			//if ( Changed == false )
+			//	return;
 			Appearance.CopyAppearanceTo( sadConsoleCell );
 			Changed = false;
 		}

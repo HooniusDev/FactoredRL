@@ -28,26 +28,51 @@ namespace Factored.Consoles
 		public MapLayerConsole( int width, int height, IMap map, int mapWidth, int mapHeight ) : base( mapWidth, mapHeight )
 		{
 			this.map = map;
-			Fill( null, Colors.DefaultBG, null );
+			//Fill( null, Colors.DefaultBG, null );
 		}
 
-		public void SetTileAppearance( int x, int y, TileType type )
+		public void Init()
 		{
+			for ( int x = 0; x < map.Width(); x++ )
+				for ( int y = 0; y < map.Height(); y++ )
+				{
+					SetTileAppearance( x, y, map.GetTileType( x, y ), false, false );
+				}
+		}
+
+		public void SetTileAppearance( int x, int y, TileType type, bool fov = false, bool explored = false )
+		{
+	
 			switch ( type )
 			{
 				case ( TileType.Floor ):
 					{
-						SetCellAppearance( x, y, CellAppearances.FloorFov );
+						if ( fov )
+							SetCellAppearance( x, y, CellAppearances.FloorFov );
+						else if ( explored )
+							SetCellAppearance( x, y, CellAppearances.FloorExplored );
+						else
+							Clear( x, y );
 						break;
 					}
 				case ( TileType.Wall ):
 					{
-						SetCellAppearance( x, y, CellAppearances.WallFov );
+						if ( fov )
+							SetCellAppearance( x, y, CellAppearances.WallFov );
+						else if ( explored )
+							SetCellAppearance( x, y, CellAppearances.WallExplored );
+						else
+							Clear( x, y );
 						break;
 					}
 				case ( TileType.Corridor ):
 					{
-						SetCellAppearance( x, y, CellAppearances.CorridorFov );
+						if ( fov )
+							SetCellAppearance( x, y, CellAppearances.CorridorFov );
+						else if ( explored )
+							SetCellAppearance( x, y, CellAppearances.CorridorExplored );
+						else
+							Clear( x, y );
 						break;
 					}
 				case ( TileType.None ):
@@ -61,44 +86,69 @@ namespace Factored.Consoles
 			}
 		}
 
-		public override void Render()
+		public void RenderAppearances()
 		{
-			base.Render();
+			foreach ( Point tile in map.GetTilesToDraw() )
+			{
+
+				if ( map.IsFov( tile.X, tile.Y ) == true )
+				{
+					SetTileAppearance( tile.X, tile.Y,  map.GetTileType( tile.X, tile.Y ), true );
+				}
+				else if ( !map.IsFov( tile.X, tile.Y ) && map.IsExplored( tile.X, tile.Y ) == true )
+				{
+					SetTileAppearance( tile.X, tile.Y,  map.GetTileType( tile.X, tile.Y ), false, true );
+				}
+				if ( !map.IsFov( tile.X, tile.Y ) && !map.IsExplored( tile.X, tile.Y ) )
+				{
+					SetTileAppearance( tile.X, tile.Y,  map.GetTileType( tile.X, tile.Y ), false, false );
+				}
+			}
+			map.ClearTilesToDraw();
+		}
+
+		public void RenderMap()
+		{
 			//System.Console.WriteLine( "MAp LAyer Render!" );
 			//for ( int x = 0; x < map.Width(); x++ )
 			//	for ( int y = 0; y < map.Width(); y++ )
+			//int counter = 0;
 			foreach ( Point tile in map.GetTilesToDraw() )
+			{
+				//counter++;
+				if ( map.IsFov( tile.X, tile.Y ) == true )
 				{
-					if ( map.IsFov( tile.X, tile.Y) == true )
+					
+					if ( this[tile.X, tile.Y].Effect != null )
 					{
-						SetTileAppearance( tile.X, tile.Y, map.GetTileType( tile.X, tile.Y ) );
-						if ( this[tile.X, tile.Y].Effect != null )
-						{
-
-							this[tile.X, tile.Y].Effect.Clear( this[tile.X, tile.Y] );
-							//map.TileChanged( x, y );
-							//canvas[x, y].Effect.Apply( canvas[x, y] );
-						}
+						//this[tile.X, tile.Y].Effect = CellAppearances.FovEffect;
+						//this[tile.X, tile.Y].Effect.Apply( this[tile.X, tile.Y] );
+						this[tile.X, tile.Y].Effect.Clear( this[tile.X, tile.Y] );
+						this[tile.X, tile.Y].Effect = null;
+						return;
 					}
-					else if ( map.IsExplored( tile.X, tile.Y ) == true )
-					{
-
-						if ( map.GetTileType( tile.X, tile.Y ) != TileType.None )
-						{
-							this[tile.X, tile.Y].Effect = CellAppearances.ExploredEffect;
-							this[tile.X, tile.Y].Effect.Apply( this[tile.X, tile.Y] );
-						}
-					}
-					if ( !map.IsFov( tile.X, tile.Y ) && !map.IsExplored( tile.X, tile.Y ) )
-					{
-						if ( map.GetTileType( tile.X, tile.Y ) != TileType.None )
-						{
-							this[tile.X, tile.Y].Effect = CellAppearances.HiddenEffect;
-							this[tile.X, tile.Y].Effect.Apply( this[tile.X, tile.Y] );
-						}
-					}
-
 				}
+				else if ( !map.IsFov( tile.X, tile.Y ) && map.IsExplored( tile.X, tile.Y ) == true )
+				{
+					if ( map.GetTileType( tile.X, tile.Y ) != TileType.None )
+					{
+						this[tile.X, tile.Y].Effect = CellAppearances.ExploredEffect;
+						this[tile.X, tile.Y].Effect.Apply( this[tile.X, tile.Y] );
+					}
+				}
+				if ( !map.IsFov( tile.X, tile.Y ) && !map.IsExplored( tile.X, tile.Y ) )
+				{
+					if ( map.GetTileType( tile.X, tile.Y ) != TileType.None )
+					{
+						this[tile.X, tile.Y].Effect = CellAppearances.HiddenEffect;
+						this[tile.X, tile.Y].Effect.Apply( this[tile.X, tile.Y] );
+					}
+				}
+
+			}
+			//if ( counter > 0)
+				//System.Console.WriteLine( "Rendered count: " + counter.ToString() );
+			map.ClearTilesToDraw();
 		}
 
 		public void CenterViewOn( Point point )

@@ -10,6 +10,7 @@ using Factored.ECS;
 using Factored.MapObjects;
 using Factored.MapBuilder;
 using Factored.Consoles;
+using Factored.ECS.Systems;
 
 namespace Factored.Systems
 {
@@ -31,9 +32,24 @@ namespace Factored.Systems
 		int[,] permanentLight { get; set; }
 
 		public List<Point> tilesToUpdate;
+		public List<Point> tilesToClear;
 		public List<Point> GetTilesToDraw()
 		{
 			return tilesToUpdate;
+		}
+		public void ClearTilesToDraw()
+		{
+			tilesToUpdate.Clear();
+		}
+
+		public List<Point> GetTilesToClear()
+		{
+			return tilesToClear;
+		}
+
+		public void ClearTilesToClear()
+		{
+			tilesToClear.Clear();
 		}
 
 		public MapSystem( int width, int height )
@@ -41,6 +57,7 @@ namespace Factored.Systems
 			GameConstants.Map = this;
 			mapRect = new Rectangle( 0, 0, width, height );
 			tilesToUpdate = new List<Point>();
+			tilesToClear = new List<Point>();
 			init();
 			buildDefaultMap();
 			EntityManager.CreatePlayer();
@@ -59,12 +76,15 @@ namespace Factored.Systems
 
 		private void AddPlayer()
 		{
-			ComponentManager.GetComponent<PositionComponent>( EntityManager.Player ).Position = GetRandomEmpty();
+			Point tile = ComponentManager.GetComponent<PositionComponent>( EntityManager.Player ).Position = GetRandomEmpty();
 			Console.WriteLine( "Player at: " + ComponentManager.GetComponent<PositionComponent>( EntityManager.Player ).Position.ToString() );
-			//actors.Add( GameConstants.player, startPos );
-			//SetTile( startPos, TileTypes.StairsUp );
-			//UpdatePlayerFieldOfView();
-			//MapViewport.needsRedraw = true;
+			Fov.GetFov( this, tile, 10 );
+		}
+
+		public void OnEntityMoved(int e, Point from, Point to)
+		{
+			tilesToUpdate.Add( to );
+			tilesToClear.Add( from );
 		}
 
 		private Point GetRandomEmpty( int roomID = -1 )
@@ -118,7 +138,7 @@ namespace Factored.Systems
 					isExplored[x, y] = false;
 					isTransparent[x, y] = false;
 					blockintEntity[x, y] = -1;
-					isFov[x, y] = true;
+					isFov[x, y] = false;
 					dynamicLight[x, y] = 0;
 					staticLight[x, y] = 0;
 					permanentLight[x, y] = 0;
@@ -133,7 +153,10 @@ namespace Factored.Systems
 		}
 		public bool IsValid( int x, int y )
 		{
-			return mapRect.Contains( new Point(x,y) );
+			if ( !mapRect.Contains( new Point( x, y ) ) || tileType[x, y] == TileType.None )
+				return false;
+			else
+				return true;
 		}
 
 		public bool IsWalkable( Point tile )
