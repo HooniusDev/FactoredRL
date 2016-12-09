@@ -48,6 +48,7 @@ namespace Factored.ECS.Component
 
 		public void Close( int e = -1)
 		{
+			ComponentManager.AddComponent( OwnerID, new BlockMoveComponent( OwnerID ) );
 			if ( e == EntityManager.Player )
 				System.Console.WriteLine( "You gently slam the door shut." );
 			IsOpen = false;

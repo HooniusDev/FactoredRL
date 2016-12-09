@@ -50,7 +50,8 @@ namespace Factored.Consoles
 						if ( fov )
 							SetCellAppearance( x, y, CellAppearances.FloorFov );
 						else if ( explored )
-							SetCellAppearance( x, y, CellAppearances.FloorExplored );
+							SetForeground( x, y, Colors.Floor );
+						//SetCellAppearance( x, y, CellAppearances.FloorExplored );
 						else
 							Clear( x, y );
 						break;
@@ -60,7 +61,8 @@ namespace Factored.Consoles
 						if ( fov )
 							SetCellAppearance( x, y, CellAppearances.WallFov );
 						else if ( explored )
-							SetCellAppearance( x, y, CellAppearances.WallExplored );
+							SetForeground( x, y, Colors.Floor );
+						//SetCellAppearance( x, y, CellAppearances.WallExplored );
 						else
 							Clear( x, y );
 						break;
@@ -70,7 +72,8 @@ namespace Factored.Consoles
 						if ( fov )
 							SetCellAppearance( x, y, CellAppearances.CorridorFov );
 						else if ( explored )
-							SetCellAppearance( x, y, CellAppearances.CorridorExplored );
+							SetForeground( x, y, Colors.Floor );
+						//SetCellAppearance( x, y, CellAppearances.CorridorExplored );
 						else
 							Clear( x, y );
 						break;

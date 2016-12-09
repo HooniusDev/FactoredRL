@@ -27,6 +27,7 @@ namespace Factored.ECS.Component
 		public void RemoveBlockComponent()
 		{
 			GameConstants.Map.SetBlockMoveComponent( -1, ComponentManager.GetComponent<PositionComponent>( OwnerID ).Position );
+			ComponentManager.RemoveComponent( OwnerID, this );
 		}
 	}
 }

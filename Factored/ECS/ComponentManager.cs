@@ -21,6 +21,14 @@ namespace Factored.ECS
 			_components = new Dictionary<int, List<IComponent>>();
 		}
 
+		public static void RemoveComponent( int id, IComponent component )
+		{
+			if ( _components.ContainsKey( id ) )
+			{
+				_components[id].Remove( component );
+			}
+		}
+
 		public static void AddComponent( int id, IComponent component ) 
 		{
 			if( !_components.ContainsKey( id ) )

@@ -61,9 +61,9 @@ namespace Factored.ECS.Systems
 				Point tileDown = new Point( x, position.Y - 1 );
 				if ( !map.IsTransparent( new Point( x, position.Y )))
 				{
-					if ( map.IsTransparent(tileUp) )
+					if ( !map.IsTransparent(tileUp) )
 						VisibleTiles.Add( tileUp );
-					if ( map.IsTransparent( tileDown ) )
+					if ( !map.IsTransparent( tileDown ) )
 						VisibleTiles.Add( tileDown );
 					break;
 				}

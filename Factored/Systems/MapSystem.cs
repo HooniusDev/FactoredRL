@@ -87,6 +87,29 @@ namespace Factored.Systems
 			tilesToClear.Add( from );
 		}
 
+		public void MoveEntity( int e, Point target )
+		{
+			if ( !IsValid( target ) )
+				return;
+			BlockMoveComponent bmc = ComponentManager.GetComponent<BlockMoveComponent>( e );
+			PositionComponent pc = ComponentManager.GetComponent<PositionComponent>( e );
+			if ( bmc != null && pc != null )
+			{
+				if ( IsWalkable( pc.Position ) )
+				{
+					if ( IsValid( pc.Position ) )
+					{
+						blockintEntity[pc.Position.X, pc.Position.Y] = -1; // Old pos to -1 
+						//isWalkable[pc.Position.X, pc.Position.Y] = false; // old pos to a walkable
+					}
+					pc.Position = target;
+					blockintEntity[pc.Position.X, pc.Position.Y] = e;
+					//isWalkable[target.X, target.Y] = false;
+				}
+					
+			}
+		}
+
 		private Point GetRandomEmpty( int roomID = -1 )
 		{
 			int r = roomID;
@@ -167,7 +190,17 @@ namespace Factored.Systems
 		{
 			// Blocking Entity should be setting this flag through a system
 			if ( IsValid( x, y ) )
-				return isWalkable[x, y];
+			{
+				List<BlockMoveComponent> components = ComponentManager.GetComponentsAtTile<BlockMoveComponent>( new Point( x, y ) );
+				if ( components.Count == 0 )
+				{
+					System.Console.WriteLine( "no blockmovecompos" );	
+					return isWalkable[x, y];
+				}
+				else
+					return false;
+
+			}
 			else
 				return false;
 		}
@@ -252,6 +285,7 @@ namespace Factored.Systems
 						ComponentManager.AddComponent( e, new PositionComponent( e, tile ) );
 						ComponentManager.AddComponent( e, new RenderComponent( e, CellAppearances.DoorOpenFov, 1 ) );
 						ComponentManager.AddComponent( e, new DoorComponent( e ) );
+						//MoveEntity( e, tile );
 						//map.Add( tile, e );
 						break;
 					}
